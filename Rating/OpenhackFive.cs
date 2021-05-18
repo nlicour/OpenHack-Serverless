@@ -17,12 +17,11 @@ namespace OpenHack
     {
         [FunctionName("CreateRating")]
         public static async Task<IActionResult> CreateRating(
-            // HttpRequest req,
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             [CosmosDB(
-                databaseName: "ToDoItems",
+                databaseName: "Rating",
                 collectionName: "Items",
-                ConnectionStringSetting = "CosmosDBConnection")]
+                ConnectionStringSetting = "XXX")]
                 IAsyncCollector<RatingType> toDoItemsOut,
             ILogger log)
         {
@@ -40,10 +39,6 @@ namespace OpenHack
             if (!ApiService.IsValidProduct(rating.ProductId) || !ApiService.IsValidUser(rating.UserId)){
                 return new OkObjectResult(rating);
             }
-
-            // string responseMessage = string.IsNullOrEmpty(productId)
-            //     ? "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response."
-            //     : $"Hello, {productId}. This HTTP triggered function executed successfully.";
 
             return new OkObjectResult(rating);
         }
