@@ -19,11 +19,11 @@ namespace OpenHack
         public static async Task<IActionResult> CreateRating(
             // HttpRequest req,
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
-            // [CosmosDB(
-            //     databaseName: "ToDoItems",
-            //     collectionName: "Items",
-            //     ConnectionStringSetting = "CosmosDBConnection")]
-            //     IAsyncCollector<ToDoItem> toDoItemsOut,
+            [CosmosDB(
+                databaseName: "ToDoItems",
+                collectionName: "Items",
+                ConnectionStringSetting = "CosmosDBConnection")]
+                IAsyncCollector<RatingType> toDoItemsOut,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
