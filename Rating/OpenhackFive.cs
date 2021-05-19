@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using System.Net.Http;
 using OpenHack.Entities;
 using OpenHack.Service;
+using System.Collections.Generic;
 
 namespace OpenHack
 {
@@ -52,5 +53,38 @@ namespace OpenHack
 
             return new OkObjectResult(rating);
         }
+
+        [FunctionName("GetRatings")]
+        public static async Task<IActionResult> GetRatings(
+          [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRatings/{userId}")] HttpRequest req,
+          [CosmosDB(
+                databaseName: "Ratings",
+                collectionName: "Rating",
+                ConnectionStringSetting = "connectionStringSetting",
+                SqlQuery = "SELECT * FROM rating r where r.userId = {userId}")]
+                IEnumerable<RatingType> ratingsCollection,
+          ILogger log)
+        {
+            // string userId = req.Query["userId"];
+
+            return new OkObjectResult(ratingsCollection);
+        }
+
+        // [FunctionName("GetRating")]
+        // public static async Task<IActionResult> GetRating(
+        //     [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRating/{id}")] HttpRequest req,
+        //     [CosmosDB(
+        //         databaseName: "Ratings",
+        //         collectionName: "Rating",
+        //         ConnectionStringSetting = "connectionStringSetting",
+        //         SqlQuery = "SELECT * FROM rating r where r.id = {id}")] RatingType rating,
+        //     ILogger log)
+        // {
+        //     if (rating is null)
+        //     {
+        //         return new NotFoundObjectResult($"rating not found");
+        //     }
+        //     return new OkObjectResult(rating);
+        // }
     }
 }
