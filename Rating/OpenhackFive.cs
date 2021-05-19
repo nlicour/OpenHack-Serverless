@@ -11,6 +11,7 @@ using System.Net.Http;
 using OpenHack.Entities;
 using OpenHack.Service;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace OpenHack
 {
@@ -55,7 +56,7 @@ namespace OpenHack
         }
 
         [FunctionName("GetRatings")]
-        public static async Task<IActionResult> GetRatings(
+        public static IActionResult GetRatings(
           [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRatings/{userId}")] HttpRequest req,
           [CosmosDB(
                 databaseName: "Ratings",
@@ -70,21 +71,21 @@ namespace OpenHack
             return new OkObjectResult(ratingsCollection);
         }
 
-        // [FunctionName("GetRating")]
-        // public static async Task<IActionResult> GetRating(
-        //     [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRating/{id}")] HttpRequest req,
-        //     [CosmosDB(
-        //         databaseName: "Ratings",
-        //         collectionName: "Rating",
-        //         ConnectionStringSetting = "connectionStringSetting",
-        //         SqlQuery = "SELECT * FROM rating r where r.id = {id}")] RatingType rating,
-        //     ILogger log)
-        // {
-        //     if (rating is null)
-        //     {
-        //         return new NotFoundObjectResult($"rating not found");
-        //     }
-        //     return new OkObjectResult(rating);
-        // }
+        [FunctionName("GetRating")]
+        public static IActionResult GetRating(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRating/{id}")] HttpRequest req,
+            [CosmosDB(
+                databaseName: "Ratings",
+                collectionName: "Rating",
+                ConnectionStringSetting = "connectionStringSetting",
+                SqlQuery = "SELECT * FROM rating r where r.id = {id}")] IEnumerable<RatingType> ratings,
+            ILogger log)
+        {
+            if (ratings is null || !ratings.Any())
+            {
+                return new NotFoundObjectResult($"rating not found");
+            }
+            return new OkObjectResult(ratings.FirstOrDefault());
+        }
     }
 }
