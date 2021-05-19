@@ -19,7 +19,7 @@ namespace OpenHack
     {
         [FunctionName("CreateRating")]
         public static async Task<IActionResult> CreateRating(
-            [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = null)] HttpRequest req,
             [CosmosDB(
                 databaseName: "Ratings",
                 collectionName: "Rating",
@@ -57,7 +57,7 @@ namespace OpenHack
 
         [FunctionName("GetRatings")]
         public static IActionResult GetRatings(
-          [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRatings/{userId}")] HttpRequest req,
+          [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRatings/{userId}")] HttpRequest req,
           [CosmosDB(
                 databaseName: "Ratings",
                 collectionName: "Rating",
@@ -73,7 +73,7 @@ namespace OpenHack
 
         [FunctionName("GetRating")]
         public static IActionResult GetRating(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "GetRating/{id}")] HttpRequest req,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "GetRating/{id}")] HttpRequest req,
             [CosmosDB(
                 databaseName: "Ratings",
                 collectionName: "Rating",
