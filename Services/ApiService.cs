@@ -1,20 +1,21 @@
 using System;
 using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace OpenHack.Service
 {
     public static class ApiService
     {
-        // ne pas juger le .Result
-        public static bool IsValidUser(string id){
+        public async static Task<bool> IsValidUser(string id){
             HttpClient httpClient = new HttpClient();
-            var result = httpClient.GetAsync($"https://serverlessohproduct.trafficmanager.net/api/GetUser?userId={id}").Result;
+            var result = await httpClient.GetAsync($"https://serverlessohuser.trafficmanager.net/api/GetUser?userId={id}");
             return result.IsSuccessStatusCode;
+            
         }
 
-        public static bool IsValidProduct(string id){
+        public async static Task<bool> IsValidProduct(string id){
             HttpClient httpClient = new HttpClient();
-            var result = httpClient.GetAsync($"https://serverlessohproduct.trafficmanager.net/api/GetProduct?productId={id}").Result;
+            var result = await httpClient.GetAsync($"https://serverlessohproduct.trafficmanager.net/api/GetProduct?productId={id}");
             return result.IsSuccessStatusCode;
         }
     }

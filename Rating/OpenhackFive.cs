@@ -19,26 +19,36 @@ namespace OpenHack
         public static async Task<IActionResult> CreateRating(
             [HttpTrigger(AuthorizationLevel.Function, "post", Route = null)] HttpRequest req,
             [CosmosDB(
-                databaseName: "Rating",
-                collectionName: "Items",
-                ConnectionStringSetting = "XXX")]
-                IAsyncCollector<RatingType> toDoItemsOut,
+                databaseName: "Ratings",
+                collectionName: "Rating",
+                ConnectionStringSetting = "connectionStringSetting")]
+                IAsyncCollector<RatingType> ratingsCollection,
             ILogger log)
         {
             log.LogInformation("C# HTTP trigger function processed a request.");
 
             string requestBody = await new StreamReader(req.Body).ReadToEndAsync();
-            dynamic data = JsonConvert.DeserializeObject(requestBody);
+            RatingType rating = JsonConvert.DeserializeObject<RatingType>(requestBody);
 
-            RatingType rating = new RatingType()
+            if (!(await ApiService.IsValidUser(rating.userId)))
             {
-                ProductId = data?.productId,
-                UserId = data?.userId,
-            };
-
-            if (!ApiService.IsValidProduct(rating.ProductId) || !ApiService.IsValidUser(rating.UserId)){
-                return new OkObjectResult(rating);
+                return new BadRequestObjectResult($"Invalid userId {rating.userId}");
             }
+
+            if (!await ApiService.IsValidProduct(rating.productId))
+            {
+                return new BadRequestObjectResult($"Invalid productId {rating.userId}");
+            }
+
+            if (rating.rating < 0 || rating.rating > 5)
+            {
+                return new BadRequestObjectResult($"Invalid rating : {rating.rating}");
+            }
+
+            rating.id = Guid.NewGuid().ToString();
+            rating.timestamp = new DateTimeOffset(DateTime.UtcNow).ToUnixTimeSeconds().ToString();
+
+            await ratingsCollection.AddAsync(rating);
 
             return new OkObjectResult(rating);
         }
